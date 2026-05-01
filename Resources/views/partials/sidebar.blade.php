@@ -1,6 +1,7 @@
 <div class="conv-sidebar-block pretix-sidebar-block"
      data-email="{{ $customer_email }}"
-     data-conversation="{{ $conversation_id }}">
+     data-conversation="{{ $conversation_id }}"
+     data-ajax-url="{{ route('pretixintegration.ajax') }}">
     <div class="conv-sidebar-block-title">
         <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
         {{ __('Pretix Bookings') }}

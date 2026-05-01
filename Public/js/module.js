@@ -10,15 +10,16 @@
         var $container = $(container);
         var email = $container.data('email');
         var conversationId = $container.data('conversation');
+        var ajaxUrl = $container.data('ajax-url');
         var $target = $('#pretix-orders-' + conversationId);
 
-        if (!email || !$target.length) {
+        if (!email || !ajaxUrl || !$target.length) {
             return;
         }
 
         fsAjax(
             { action: 'get_orders', email: email },
-            laroute.route('pretixintegration.ajax'),
+            ajaxUrl,
             function (response) {
                 if (response.status === 'success') {
                     $target.html(response.html);
