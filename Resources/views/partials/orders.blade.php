@@ -6,12 +6,6 @@
         'c' => ['label' => __('Cancelled'),  'class' => 'danger'],
     ];
 
-    $currencySymbols = [
-        'GBP' => '£',   'EUR' => '€',   'USD' => '$',   'CAD' => 'CA$',
-        'AUD' => 'A$',  'NZD' => 'NZ$', 'CHF' => 'CHF', 'JPY' => '¥',
-        'CNY' => '¥',   'DKK' => 'kr',  'NOK' => 'kr',  'SEK' => 'kr',
-        'PLN' => 'zł',  'CZK' => 'Kč',  'HUF' => 'Ft',  'RON' => 'lei',
-    ];
 @endphp
 
 @if (empty($orders))
@@ -29,9 +23,7 @@
             $name       = $order['invoice_address']['name'] ?? ($order['invoice_address']['company'] ?? '');
             $date       = \Carbon\Carbon::parse($order['datetime'])->format('d M Y');
 
-            $currency   = $order['currency'] ?? '';
-            $symbol     = $currencySymbols[$currency] ?? $currency . ' ';
-            $total      = $symbol . $order['total'];
+            $total = '£' . $order['total'];
 
             // Build locale candidates: exact match first, then language prefix, then 'en'
             $locale     = $order['locale'] ?? 'en';
