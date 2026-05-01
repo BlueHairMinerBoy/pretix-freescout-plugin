@@ -1,0 +1,19 @@
+{
+    "name": "bluehairminerboy/freescout-pretix-integration",
+    "description": "Pretix integration module for FreeScout — shows event bookings in the conversation sidebar",
+    "keywords": ["freescout", "pretix", "module", "helpdesk", "ticketing"],
+    "license": "MIT",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\PretixIntegration\\Providers\\PretixServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\PretixIntegration\\": ""
+        }
+    },
+    "minimum-stability": "stable"
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Pretix Integration",
+    "alias": "pretixintegration",
+    "description": "Shows Pretix event bookings for a customer in the conversation sidebar, with deep links to the Pretix backend order pages.",
+    "version": "1.0.0",
+    "detailsUrl": "https://github.com/bluehairminerboy/pretix-freescout-plugin",
+    "author": "BlueHairMinerBoy",
+    "providers": [
+        "Modules\\PretixIntegration\\Providers\\PretixServiceProvider"
+    ],
+    "requires": [],
+    "files": [
+        "start.php"
+    ]
+}
