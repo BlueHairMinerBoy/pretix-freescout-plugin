@@ -3,9 +3,8 @@
 
     @include('partials/flash_messages')
 
-    <form class="form-horizontal margin-top" method="POST" action="">
+    <form class="form-horizontal margin-top" method="POST" action="{{ route('settings.save', ['section' => 'pretixintegration']) }}">
         {{ csrf_field() }}
-        <input type="hidden" name="section" value="pretixintegration">
 
         <div class="form-group{{ $errors->has('settings.base_url') ? ' has-error' : '' }}">
             <label for="pretix_base_url" class="col-sm-3 control-label">

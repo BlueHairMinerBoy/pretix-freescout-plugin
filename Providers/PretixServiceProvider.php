@@ -98,13 +98,14 @@ class PretixServiceProvider extends ServiceProvider
             return $settings;
         }, 20, 2);
 
-        \Eventy::addAction('settings.after_save', function ($request, $section) {
+        \Eventy::addFilter('settings.after_save', function ($response, $request, $section, $settings) {
             if ($section !== self::MODULE_ALIAS) {
-                return;
+                return $response;
             }
             \Option::set('pretixintegration.base_url',  rtrim($request->input('settings.base_url', ''), '/'));
             \Option::set('pretixintegration.api_token', $request->input('settings.api_token', ''));
             \Option::set('pretixintegration.organizer', trim($request->input('settings.organizer', '')));
-        }, 20, 2);
+            return $response;
+        }, 20, 4);
     }
 }
