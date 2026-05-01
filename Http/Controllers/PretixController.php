@@ -86,6 +86,7 @@ class PretixController extends Controller
             'query' => [
                 'email'    => $email,
                 'ordering' => '-datetime',
+                'expand'   => 'positions.item',
             ],
         ]);
 

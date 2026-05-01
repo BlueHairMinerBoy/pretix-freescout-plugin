@@ -127,6 +127,18 @@
     opacity: 0.6;
 }
 
+/* Ticket name list */
+.pretix-ticket-list {
+    margin: 4px 0 2px;
+    padding-left: 16px;
+    color: #444;
+    font-size: 11px;
+}
+
+.pretix-ticket-list li {
+    margin-bottom: 1px;
+}
+
 /* Footer row: price + ticket count */
 .pretix-order-footer {
     color: #555;
@@ -135,9 +147,4 @@
 
 .pretix-order-total {
     font-weight: 600;
-}
-
-.pretix-ticket-count {
-    color: #888;
-    margin-left: 2px;
 }
