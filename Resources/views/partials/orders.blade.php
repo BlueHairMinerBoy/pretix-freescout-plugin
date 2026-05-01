@@ -33,21 +33,39 @@
             $symbol     = $currencySymbols[$currency] ?? $currency . ' ';
             $total      = $symbol . $order['total'];
 
+            // Build locale candidates: exact match first, then language prefix, then 'en'
             $locale     = $order['locale'] ?? 'en';
-            $tickets    = [];
+            $lang       = substr($locale, 0, 2);
+            $locales    = array_unique([$locale, $lang, 'en']);
+
+            $tickets     = [];
+            $ticketCount = 0;
             foreach ($order['positions'] ?? [] as $position) {
                 if (!empty($position['is_bundled'])) {
                     continue;
                 }
+                $ticketCount++;
                 $item = $position['item'] ?? null;
                 if (is_array($item)) {
-                    $names  = $item['name'] ?? [];
-                    $label  = $names[$locale] ?? $names['en'] ?? reset($names) ?? '';
-                } else {
-                    $label = '';
-                }
-                if ($label !== '') {
-                    $tickets[] = $label;
+                    $names = $item['name'] ?? '';
+                    if (is_array($names)) {
+                        $label = '';
+                        foreach ($locales as $try) {
+                            if (!empty($names[$try])) {
+                                $label = $names[$try];
+                                break;
+                            }
+                        }
+                        // Last resort: first available translation
+                        if ($label === '' && !empty($names)) {
+                            $label = array_values($names)[0];
+                        }
+                    } else {
+                        $label = (string) $names;
+                    }
+                    if ($label !== '') {
+                        $tickets[] = $label;
+                    }
                 }
             }
         @endphp
@@ -85,6 +103,10 @@
                         <li>{{ $ticket }}</li>
                     @endforeach
                 </ul>
+            @elseif ($ticketCount > 0)
+                <div class="pretix-ticket-count">
+                    {{ trans_choice(':count ticket|:count tickets', $ticketCount) }}
+                </div>
             @endif
 
             <div class="pretix-order-footer">
