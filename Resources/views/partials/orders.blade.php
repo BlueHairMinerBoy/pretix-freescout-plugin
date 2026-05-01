@@ -30,34 +30,31 @@
             $lang       = substr($locale, 0, 2);
             $locales    = array_unique([$locale, $lang, 'en']);
 
+            $positions   = $order['positions'] ?? [];
+            $ticketCount = count($positions);
             $tickets     = [];
-            $ticketCount = 0;
-            foreach ($order['positions'] ?? [] as $position) {
-                if (!empty($position['is_bundled'])) {
+            foreach ($positions as $position) {
+                $item = $position['item'] ?? null;
+                if (!is_array($item)) {
                     continue;
                 }
-                $ticketCount++;
-                $item = $position['item'] ?? null;
-                if (is_array($item)) {
-                    $names = $item['name'] ?? '';
-                    if (is_array($names)) {
-                        $label = '';
-                        foreach ($locales as $try) {
-                            if (!empty($names[$try])) {
-                                $label = $names[$try];
-                                break;
-                            }
+                $names = $item['name'] ?? '';
+                if (is_array($names)) {
+                    $label = '';
+                    foreach ($locales as $try) {
+                        if (!empty($names[$try])) {
+                            $label = $names[$try];
+                            break;
                         }
-                        // Last resort: first available translation
-                        if ($label === '' && !empty($names)) {
-                            $label = array_values($names)[0];
-                        }
-                    } else {
-                        $label = (string) $names;
                     }
-                    if ($label !== '') {
-                        $tickets[] = $label;
+                    if ($label === '' && !empty($names)) {
+                        $label = array_values($names)[0];
                     }
+                } else {
+                    $label = (string) $names;
+                }
+                if ($label !== '') {
+                    $tickets[] = $label;
                 }
             }
         @endphp
