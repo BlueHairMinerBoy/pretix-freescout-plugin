@@ -11,7 +11,25 @@ class PretixServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', self::MODULE_ALIAS);
+        $this->registerRoutes();
         $this->registerHooks();
+    }
+
+    private function registerRoutes()
+    {
+        if (app()->routesAreCached()) {
+            return;
+        }
+        \Route::group([
+            'middleware' => ['web', 'auth', 'roles'],
+            'prefix'     => \Helper::getSubdirectory(),
+            'namespace'  => 'Modules\PretixIntegration\Http\Controllers',
+        ], function () {
+            \Route::post('/pretixintegration/ajax', [
+                'uses'    => 'PretixController@ajax',
+                'laroute' => true,
+            ])->name('pretixintegration.ajax');
+        });
     }
 
     public function register()
