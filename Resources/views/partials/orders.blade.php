@@ -34,11 +34,10 @@
             $ticketCount = count($positions);
             $tickets     = [];
             foreach ($positions as $position) {
-                $item = $position['item'] ?? null;
-                if (!is_array($item)) {
+                $names = $position['item_name'] ?? null;
+                if ($names === null) {
                     continue;
                 }
-                $names = $item['name'] ?? '';
                 if (is_array($names)) {
                     $label = '';
                     foreach ($locales as $try) {

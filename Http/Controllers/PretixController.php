@@ -74,23 +74,51 @@ class PretixController extends Controller
 
     private function fetchOrdersByEmail(string $baseUrl, string $apiToken, string $organizer, string $email): array
     {
-        $client = new Client(['timeout' => 15]);
+        $client  = new Client(['timeout' => 15]);
+        $headers = [
+            'Authorization' => 'Token ' . $apiToken,
+            'Accept'        => 'application/json',
+        ];
 
-        $url = rtrim($baseUrl, '/') . '/api/v1/organizers/' . rawurlencode($organizer) . '/orders/';
-
-        $httpResponse = $client->get($url, [
-            'headers' => [
-                'Authorization' => 'Token ' . $apiToken,
-                'Accept'        => 'application/json',
-            ],
-            'query' => [
-                'email'    => $email,
-                'ordering' => '-datetime',
-                'expand'   => 'positions.item',
-            ],
+        // Fetch orders
+        $ordersUrl = rtrim($baseUrl, '/') . '/api/v1/organizers/' . rawurlencode($organizer) . '/orders/';
+        $ordersResponse = $client->get($ordersUrl, [
+            'headers' => $headers,
+            'query'   => ['email' => $email, 'ordering' => '-datetime'],
         ]);
+        $orders = json_decode($ordersResponse->getBody()->getContents(), true)['results'] ?? [];
 
-        $data = json_decode($httpResponse->getBody()->getContents(), true);
-        return $data['results'] ?? [];
+        if (empty($orders)) {
+            return [];
+        }
+
+        // Build item name map: event_slug => [item_id => name]
+        $itemNames  = [];
+        $eventSlugs = array_unique(array_column($orders, 'event'));
+        foreach ($eventSlugs as $eventSlug) {
+            $itemsUrl = rtrim($baseUrl, '/') . '/api/v1/organizers/' . rawurlencode($organizer)
+                      . '/events/' . rawurlencode($eventSlug) . '/items/';
+            try {
+                $itemsResponse = $client->get($itemsUrl, ['headers' => $headers]);
+                $items = json_decode($itemsResponse->getBody()->getContents(), true)['results'] ?? [];
+                foreach ($items as $item) {
+                    $itemNames[$eventSlug][$item['id']] = $item['name'];
+                }
+            } catch (\Exception $e) {
+                // Names unavailable for this event — fall back to ticket count
+            }
+        }
+
+        // Attach resolved names to each position
+        foreach ($orders as &$order) {
+            foreach ($order['positions'] as &$position) {
+                $itemId = $position['item'];
+                $position['item_name'] = $itemNames[$order['event']][$itemId] ?? null;
+            }
+            unset($position);
+        }
+        unset($order);
+
+        return $orders;
     }
 }
