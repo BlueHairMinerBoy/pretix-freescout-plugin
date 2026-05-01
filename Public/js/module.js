@@ -17,18 +17,27 @@
             return;
         }
 
-        fsAjax(
-            { action: 'get_orders', email: email },
-            ajaxUrl,
-            function (response) {
+        $.ajax({
+            url: ajaxUrl,
+            method: 'POST',
+            global: false,
+            data: {
+                action: 'get_orders',
+                email: email,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
                 if (response.status === 'success') {
                     $target.html(response.html);
                 } else {
                     var msg = response.msg || 'Error loading Pretix bookings.';
                     $target.html('<p class="pretix-error"><span class="glyphicon glyphicon-warning-sign"></span> ' + msg + '</p>');
                 }
+            },
+            error: function () {
+                $target.html('<p class="pretix-error"><span class="glyphicon glyphicon-warning-sign"></span> Could not load Pretix bookings.</p>');
             }
-        );
+        });
     }
 
     function initPretixSidebars() {
